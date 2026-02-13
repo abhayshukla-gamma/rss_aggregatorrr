@@ -10,8 +10,10 @@ templates = Jinja2Templates(directory="templates")
 
 @router.get("/")
 def home(request : Request):
-    return templates.TemplateResponse("home.html", {"request" : request})     # request means we are passingt the templates # home.html means which html file ,request:Request means jinja2 needs it 
-
+    try:
+        return templates.TemplateResponse("home.html", {"request" : request})     # request means we are passingt the templates # home.html means which html file ,request:Request means jinja2 needs it 
+    except Exception as e:
+        return {"error":e}
 @router.get("/ui/feeds")
 def ui_feeds(request: Request, db: Session = Depends(get_db)):
     feeds = db.query(Feed).all()
