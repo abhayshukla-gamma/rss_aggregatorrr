@@ -26,27 +26,27 @@ jobs:
 
             docker compose down
             docker compose 
-            export PATH=/usr/bin:/usr/local/bin:
+            export PATH=/usr/bin:/usr/local/bin:$PATH
             echo " User: $(whoami)"
-            echo " Home: $
+            echo " Home: $"
             # Verify compose file exists
             if [ ! -f compose.yaml ] ; then
               echo " No compose file found!"
               exit 1
-
+            fi
             echo " Docker Info:"
             docker --version
-            docker compose ve
+            docker compose version
             echo " Pulling latest images"
 
             # Log in to DockerHub if your images are private
-            # echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-
+            # echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-            docker compose
+            docker compose pull
             echo " Refreshing containers"
 
             docker compose down
-            docker compose 
+            docker compose up -d
 
             echo " Cleaning up old images"
             docker image prune -f
