@@ -42,10 +42,10 @@ jobs:
             # Log in to DockerHub if your images are private
             # echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-            docker compose pull
+            docker compose pull   
             echo " Refreshing containers"
 
-            docker compose down
+            docker compose down -v
             docker compose up -d
 
             echo " Cleaning up old images"
