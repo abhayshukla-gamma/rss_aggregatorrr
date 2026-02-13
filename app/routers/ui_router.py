@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Request, Depends
-from sqlalchemy.orm import session 
+from sqlalchemy.orm import Session 
 from fastapi.templating import Jinja2Templates
 from app.core.database import get_db
 from app.models.feed import Feed
