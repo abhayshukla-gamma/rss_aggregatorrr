@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Feeds</h2>
+
+<ul>
+{% for feed in feeds %}
+    <li>
+        {{ feed.title }}
+        <a href="/ui/feeds/{{ feed.id }}/items">View Items</a>
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}
