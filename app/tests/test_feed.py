@@ -1,7 +1,4 @@
-# tests/test_feed.py
-
 def test_create_feed(client):
-
     response = client.post(
         "/feeds/create",
         json={
@@ -18,11 +15,18 @@ def test_create_feed(client):
 
 
 def test_list_feeds(client):
+    # Create a feed first (so test is independent)
+    client.post(
+        "/feeds/create",
+        json={
+            "title": "Another Feed",
+            "url": "https://example2.com/rss"
+        }
+    )
 
     response = client.get("/feeds/")
-
     assert response.status_code == 200
-    data = response.json()
 
+    data = response.json()
     assert isinstance(data, list)
     assert len(data) >= 1
