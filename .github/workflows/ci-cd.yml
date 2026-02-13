@@ -23,7 +23,7 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest
+        python -m pytest app/
 
     - name: Login to Docker Hub
       run: |
