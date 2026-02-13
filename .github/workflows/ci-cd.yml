@@ -50,7 +50,7 @@ jobs:
       - name: Run tests with pytest
         env:
           DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
-        run: pytest
+        run: python -m pytest app/
 
       - name: Login to Docker Hub
         run: |
