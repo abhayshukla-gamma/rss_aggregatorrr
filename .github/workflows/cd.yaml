@@ -1,0 +1,53 @@
+name: CD Pipeline
+
+
+on:
+  workflow_run:
+    workflows: ["CI-CD Pipeline"]
+    types:
+      - completed 
+
+jobs:
+  deploy:
+    if: ${{ github.evenet.workflow_run.conclusion == 'success'}}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -euxo pipefail
+
+            # docker pull ${{ secrets.DOCKER_USERNAME }}/rss_aggregator:latest
+
+            docker compose down
+            docker compose 
+            export PATH=/usr/bin:/usr/local/bin:
+            echo " User: $(whoami)"
+            echo " Home: $
+            # Verify compose file exists
+            if [ ! -f compose.yaml ] ; then
+              echo " No compose file found!"
+              exit 1
+
+            echo " Docker Info:"
+            docker --version
+            docker compose ve
+            echo " Pulling latest images"
+
+            # Log in to DockerHub if your images are private
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-
+
+            docker compose
+            echo " Refreshing containers"
+
+            docker compose down
+            docker compose 
+
+            echo " Cleaning up old images"
+            docker image prune -f
+            echo " Deployment complete"
