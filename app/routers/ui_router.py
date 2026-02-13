@@ -6,7 +6,7 @@ from app.models.feed import Feed
 from app.models.item import Item
 
 router = APIRouter(tags=["UI"])
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory="templates")
 
 @router.get("/")
 def home(request : Request):
