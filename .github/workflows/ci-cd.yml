@@ -9,55 +9,66 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_password
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
-    env:
-      DB_NAME: test_db
-      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
-      DB_USER: test_user
-      DB_PASSWORD: test_password
-      DB_HOST: localhost
-      DB_PORT: 5432
-
+     build-and-test:
+    runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
+       
+        # Specifies a PostgreSQL service container
+        postgres:
+          image: postgres:14-alpine # Use a lightweight Postgres image
+          ports:
+            # Maps the container port 5432 to the host machine
+            - 5432:5432
+          env:
+            POSTGRES_USER: testuser
+            POSTGRES_PASSWORD: testpassword
+            POSTGRES_DB: testdb
+          # Sets a health check to ensure the database is ready
+          options: >-
+            --health-cmd "pg_isready -U testuser"
+            --health-interval 5s
+            --health-timeout 5s
+            --health-retries 5
+      
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10" # Adjust to your Python version
 
-    - name: Install dependencies
-      run: |
-        pip install -r app/requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest # Make sure pytest is in requirements.txt or installed here
 
-    - name: Run tests
-      run: |
-        python -m pytest app/
+      - name: Wait for PostgreSQL to be ready
+        # Uses a simple script to wait for the database service to be healthy
+        run: |
+          for i in {1..10}; do
+            pg_isready -h localhost -U testuser -d testdb && break || sleep 1
+          done
 
-    - name: Login to Docker Hub
-      run: |
-        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+      - name: Run tests with pytest
+        # Set environment variables for the tests to connect to the service container
+        env:
+          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/testdb
+          # Add other necessary environment variables from your project's .env file
+        run: |
+          pytest
 
-    - name: Build Docker image
-      run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/rss_aggregator:latest .
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    - name: Push Docker image
-      run: |
-        docker push ${{ secrets.DOCKER_USERNAME }}/rss_aggregator:latest
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/rss_aggregator:latest .
 
-    
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/rss_aggregator:latest
+
+      
