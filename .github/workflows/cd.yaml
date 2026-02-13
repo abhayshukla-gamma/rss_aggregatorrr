@@ -3,13 +3,13 @@ name: CD Pipeline
 
 on:
   workflow_run:
-    workflows: ["CI-CD Pipeline"]
+    workflows: ["CI Pipeline"]
     types:
       - completed 
 
 jobs:
   deploy:
-    if: ${{ github.evenet.workflow_run.conclusion == 'success'}}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -18,7 +18,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
+          key: ${{ secrets.SSH_KEY }}
           script: |
             set -euxo pipefail
 
@@ -40,7 +40,7 @@ jobs:
             echo " Pulling latest images"
 
             # Log in to DockerHub if your images are private
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-
+            # echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-
 
             docker compose
             echo " Refreshing containers"

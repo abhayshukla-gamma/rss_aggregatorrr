@@ -1,3 +1,7 @@
+name: deployement
+
+version: 3.9
+
 services:
   db:
     image: postgres:15
@@ -14,9 +18,9 @@ services:
 
   backend:
     image: abhay20043/rss_backend:latest
-    build: 
-      context: .
-      dockerfile: Dockerfile
+    # build: 
+    #   context: .
+    #   dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
@@ -24,4 +28,4 @@ services:
     depends_on:
       - db
 volumes:
-  postgres_data:
+  postgres_data:  
