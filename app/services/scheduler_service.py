@@ -19,7 +19,7 @@ def fetch_all_feeds():
 
     db.close()
 def start_scheduler():
-    scheduler.add_job(fetch_all_feeds, "interval", minutes=20)
-    scheduler.add_job(send_daily_digest, "interval", hours=1)
+    scheduler.add_job(fetch_all_feeds, "interval", hours=8)
+    scheduler.add_job(send_daily_digest, "interval", hours=23)
 
     scheduler.start()
