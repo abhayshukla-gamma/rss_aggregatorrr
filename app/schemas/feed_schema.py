@@ -1,6 +1,6 @@
+from pydantic import BaseModel, HttpUrl  # check automatically
 
-from pydantic import BaseModel, HttpUrl # check automatically 
 
 class FeedCreate(BaseModel):
-    title : str
-    url   : HttpUrl
+    title: str
+    url: HttpUrl

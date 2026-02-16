@@ -1,10 +1,6 @@
 def test_create_feed(client):
     response = client.post(
-        "/feeds/create",
-        json={
-            "title": "Test Feed",
-            "url": "https://example.com/rss"
-        }
+        "/feeds/create", json={"title": "Test Feed", "url": "https://example.com/rss"}
     )
 
     assert response.status_code == 200
@@ -18,10 +14,7 @@ def test_list_feeds(client):
     # Create a feed first (so test is independent)
     client.post(
         "/feeds/create",
-        json={
-            "title": "Another Feed",
-            "url": "https://example2.com/rss"
-        }
+        json={"title": "Another Feed", "url": "https://example2.com/rss"},
     )
 
     response = client.get("/feeds/")
